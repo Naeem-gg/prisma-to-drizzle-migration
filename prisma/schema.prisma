@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  name      String
+  labname   String
+  password  String
+  unicode   String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  feedbacks Feedback[]
+  designs   Design[]
+}
+
+model Design {
+  designId     String         @id @default(uuid())
+  name         String
+  listRobots   Json[]
+  listMachines Json[]
+  listDummy    Json[]
+  // isRestricted        Boolean
+  // allowedContributors String[]
+  height       Int
+  width        Int
+  length       Int
+  floorColor   String
+  wallColor    String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  userId       String
+  user         User           @relation(fields: [userId], references: [id])
+  stDesigns    Stdesign[]
+  contributors Contributors[]
+  count        Int            @default(0)
+}
+
+model Stdesign {
+  staticId     String   @id @default(cuid())
+  name         String
+  listRobots   Json[]
+  listMachines Json[]
+  listDummy    Json[]
+  height       Int
+  width        Int
+  length       Int
+  floorColor   String
+  wallColor    String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  designId     String
+  designs      Design   @relation(fields: [designId], references: [designId])
+}
+
+model Templates {
+  tid          String   @id @default(uuid())
+  tnum         Int      @default(1)
+  name         String
+  listRobots   Json[]
+  listMachines Json[]
+  height       Int
+  width        Int
+  length       Int
+  floorColor   String
+  wallColor    String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Verify {
+  id        String   @id @default(cuid())
+  otp       Int
+  email     String
+  createdAt DateTime @default(now())
+}
+
+model Feedback {
+  id        String   @id @default(cuid())
+  name      String
+  subject   String
+  message   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  company   String
+  phone     String
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Contributors {
+  cid       String   @id @default(cuid())
+  name      String
+  email     String
+  designId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  design    Design   @relation(fields: [designId], references: [designId])
+}
